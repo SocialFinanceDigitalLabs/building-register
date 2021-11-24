@@ -1,4 +1,6 @@
+import random
 import secrets
+import string
 from datetime import timedelta
 
 from django.utils.timezone import now
@@ -100,3 +102,27 @@ class SignInRecord(models.Model):
         ordering = ["sign_in__timestamp"]
         get_latest_by = ["sign_in__timestamp"]
         permissions = [("view_report", "Can view reports of all records")]
+
+
+class LongLivedTokenManager(models.Manager):
+    word_tokens = string.ascii_letters + string.digits + '-_.~'
+
+    def create_token(self, user: User) -> "LongLivedToken":
+        token_text = "".join(random.choices(self.word_tokens, k=50))
+        token, created = super().get_or_create(
+            user=user,
+            defaults=dict(token=token_text)
+        )
+        if not created:
+            token.token = token_text
+            token.save()
+        return token
+
+
+class LongLivedToken(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    token = models.CharField(max_length=50, unique=True, null=False, blank=False)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+    objects = LongLivedTokenManager()

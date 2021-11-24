@@ -2,17 +2,10 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.db import transaction
-from django.forms import widgets
-from django import forms
 
-from .models import ContactDetails, ContactValidationCode, SignInRecord, AuditRecord
+from .models import ContactDetails, ContactValidationCode, SignInRecord, AuditRecord, LongLivedToken
 
 User = get_user_model()
-
-
-@admin.action(description='Merge users')
-def merge_users(modeladmin, request, queryset):
-    queryset.update(status='p')
 
 
 class AuditRecordAdmin(admin.ModelAdmin):
@@ -29,7 +22,6 @@ class AuditRecordAdmin(admin.ModelAdmin):
         return obj.contact_details.count()
 
 
-
 class ContactDetailsAdmin(admin.ModelAdmin):
     list_display = ('value', 'method', 'user', 'audit')
 
@@ -40,6 +32,10 @@ class ContactValidationCodeAdmin(admin.ModelAdmin):
 
 class SignInAdmin(admin.ModelAdmin):
     list_display = ('user', 'date', 'sign_in', 'sign_out')
+
+
+class LongLivedTokenAdmin(admin.ModelAdmin):
+    list_display = ('user', 'created', 'modified')
 
 
 @admin.action(description='Merge users')
@@ -55,6 +51,13 @@ def merge_users(modeladmin, request, queryset):
     User.objects.filter(id__in=[r.id for r in remainder]).delete()
 
 
+@admin.action(description='Create token')
+@transaction.atomic
+def create_token(modeladmin, request, queryset):
+    for user in queryset:
+        LongLivedToken.objects.create_token(user)
+
+
 class ContactDetailsInline(admin.TabularInline):
     model = ContactDetails
     fields = ('value', 'method', 'audit')
@@ -67,7 +70,7 @@ class ContactDetailsInline(admin.TabularInline):
 
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'first_name', 'last_name', 'is_staff')
-    actions = (merge_users,)
+    actions = (merge_users, create_token)
     inlines = (ContactDetailsInline,)
 
 
@@ -76,6 +79,7 @@ admin.site.register(ContactDetails, ContactDetailsAdmin)
 admin.site.register(ContactValidationCode, ContactValidationCodeAdmin)
 admin.site.register(SignInRecord, SignInAdmin)
 admin.site.register(AuditRecord, AuditRecordAdmin)
+admin.site.register(LongLivedToken, LongLivedTokenAdmin)
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
