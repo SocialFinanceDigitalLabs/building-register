@@ -3,6 +3,6 @@ image:
   
 tasks:
   - init: |
-      echo 'TODO: build project'
+      poetry install
     command: |
-      echo 'TODO: start app'
+      poetry shell
