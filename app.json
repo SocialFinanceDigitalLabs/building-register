@@ -11,6 +11,10 @@
       "description": "Deploy with production configuration",
        "value": "production"
     },
+    "DISABLE_POETRY_CREATE_RUNTIME_FILE": {
+      "description": "We specify the exact runtime in runtime.txt so we don't want the buildpack to create it",
+      "value": 1
+    },
     "DJANGO_SECRET_KEY": {
       "description": "A secret key for verifying the integrity of signed cookies.",
       "generator": "secret"
