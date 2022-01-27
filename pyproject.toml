@@ -5,7 +5,7 @@ description = ""
 authors = ["Kaj Siebert <kaj@k-si.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.8"
+python = ">=3.8,<4"
 Django = "^3.2.9"
 twilio = "^7.2.0"
 django-split-settings = "^1.1.0"
