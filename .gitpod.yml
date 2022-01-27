@@ -4,5 +4,3 @@ image:
 tasks:
   - init: |
       poetry install
-    command: |
-      poetry shell
