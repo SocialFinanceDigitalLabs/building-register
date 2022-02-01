@@ -57,6 +57,16 @@ footer>a {
     color: black;
 }
 
+.flash.error {
+    background-color: #b71c1c;
+    color: #FFF;
+}
+
+.flash.success {
+    background-color: #a5d6a7;
+    color: #000;
+}
+
 @media only screen and (max-width: 600px) {
   .signed-in {
     background-color: #c8e6c9;

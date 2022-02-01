@@ -1,9 +1,10 @@
 import logging
 
 from django import dispatch
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.timezone import now
 from django.views.decorators.cache import never_cache
 from register.models import SignInRecord, AuditRecord
@@ -22,19 +23,16 @@ def _handle_sign_in_out(request):
     date = request.POST.get('date')
     today = now().date().isoformat()
     if date != today:
-        return dict(error=f"Sorry, you attempted to {action} for the wrong date.")
+        return messages.ERROR, f"Sorry, you attempted to {action} for the wrong date."
 
-    response = {}
     if action == "sign-in" and signed_in.count() == 0:
         SignInRecord.objects.create(user=request.user, sign_in=audit)
         user_signed_in.send_robust(sender=SignInRecord, request=request, user=request.user, audit=audit)
-        response['flash'] = "You have successfully signed in. Don't forget to sign out when you leave."
+        return messages.SUCCESS, "You have successfully signed in. Don't forget to sign out when you leave."
     elif action == "sign-out":
         signed_in.sign_out(audit)
         user_signed_out.send_robust(sender=SignInRecord, request=request, user=request.user, audit=audit)
-        response['flash'] = "You have successfully signed out. See you again soon!"
-
-    return response
+        return messages.SUCCESS, "You have successfully signed out. See you again soon!"
 
 
 @login_required
@@ -42,7 +40,9 @@ def _handle_sign_in_out(request):
 def index(request):
     context = {}
     if request.method == 'POST':
-        context = _handle_sign_in_out(request)
+        level, text = _handle_sign_in_out(request)
+        messages.add_message(request, level, text)
+        return redirect('index')
 
     todays_records = SignInRecord.objects.user(request.user).today()
     signed_in_records = todays_records.open()
