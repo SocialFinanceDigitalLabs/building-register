@@ -2,7 +2,7 @@ Q_CLUSTER = {
     'name': 'building-register',
     'workers': 2,
     'recycle': 500,
-    'timeout': 60,
+    'timeout': 600,
     'compress': True,
     'save_limit': 250,
     'queue_limit': 500,
