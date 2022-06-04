@@ -8,6 +8,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.forms',
     'django_q',
+    'django_extensions',
     'materialize',
     'register',
 ]
