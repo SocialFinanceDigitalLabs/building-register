@@ -1,6 +1,7 @@
 # Localsettings
 buildingregister/settings/**/localsettings.py
 /static
+data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
