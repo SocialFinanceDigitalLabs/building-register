@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.postgres.aggregates import StringAgg
 from django.db import transaction
+from django.db.models import Q, Max
+from django.db.models.functions import Lower
 
 from .models import ContactDetails, ContactValidationCode, SignInRecord, AuditRecord, LongLivedToken
 
@@ -68,10 +71,44 @@ class ContactDetailsInline(admin.TabularInline):
         return False
 
 
+class LastActivityField(admin.DateFieldListFilter):
+    pass
+
+
 class CustomUserAdmin(UserAdmin):
-    list_display = ('username', 'first_name', 'last_name', 'is_staff')
+    list_display = ('username', 'first_name', 'last_name', 'emails', 'phone', 'last_activity', 'is_staff')
     actions = (merge_users, create_token)
     inlines = (ContactDetailsInline,)
+    search_fields = ('username', 'first_name', 'last_name', 'emails', 'phone')
+
+    @admin.display(description="Email", ordering='emails')
+    def emails(self, obj):
+        email = obj.emails
+        if email:
+            email = email.lower().replace('@socialfinance.org.uk', '@soc...')
+        return email
+
+    @admin.display(ordering='phone')
+    def phone(self, obj):
+        phone = obj.phone
+        if phone:
+            phone = phone.replace('+44', '0')
+        return phone
+
+    @admin.display(ordering='last_activity')
+    def last_activity(self, obj):
+        return obj.last_activity
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.annotate(
+            emails=StringAgg(Lower('contactdetails__value'), delimiter=', ',
+                             filter=Q(contactdetails__method='email'), distinct=True),
+            phone=StringAgg(Lower('contactdetails__value'), delimiter=', ',
+                             filter=Q(contactdetails__method='sms'), distinct=True),
+            last_activity=Max('signinrecord__date')
+        )
+        return qs
 
 
 # Register your models here.
