@@ -2,6 +2,15 @@ import logging
 
 from register.models import SignInRecord, ContactDetails
 from register.util.tokens import get_token_method
+from datetime import timedelta
+
+from dateutil.utils import today
+from django.contrib.auth import get_user_model
+
+from register.models import SignInRecord, AuditRecord
+
+User = get_user_model()
+
 
 logger = logging.getLogger(__name__)
 
@@ -18,5 +27,25 @@ def send_reminders(send=False, template="reminder"):
             except:
                 logger.exception(f"Could not send reminder to: {detail}")
         else:
-            print(detail)
+            logger.info(detail)
 
+
+def clean_old_records(days=30):
+    start_date = today() - timedelta(days=days)
+    records = SignInRecord.objects.filter(
+        date__lt=start_date
+    ).delete()
+    logger.info("Cleaned %s sign-in records older than %s", records, start_date)
+
+    records = User.objects.filter(
+        signinrecord__isnull=True, groups__isnull=True
+    ).delete()
+    logger.info("Cleaned %s user records older than %s", records, start_date)
+
+    records = AuditRecord.objects.filter(
+        sign_in__isnull=True,
+        sign_out__isnull=True,
+        contact_details__isnull=True,
+    ).delete()
+
+    logger.info("Cleaned %s audit records older than %s", records, start_date)
