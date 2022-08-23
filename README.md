@@ -95,7 +95,7 @@ To be considered:
 
 * Data retention of records
 * Non-intrusive reminders to make data accurate
-* Those who are signed-in can see other who are signed in? 
+* Those who are signed-in can see others who are signed in? 
   * Community pressure? 
   * An accurate in-office slack channel?
   
