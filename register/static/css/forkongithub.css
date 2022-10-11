@@ -8,10 +8,12 @@
     overflow: hidden;
     height: 200px;
     z-index: 9999;
+    pointer-events: none
 }
 
 .forkongithub a {
     position: absolute;
+    pointer-events: auto;
 
     width: 200px;
     bottom: 30px;
