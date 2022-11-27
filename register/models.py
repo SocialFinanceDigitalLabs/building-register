@@ -95,6 +95,10 @@ class SignInRecord(models.Model):
     sign_in = models.ForeignKey(AuditRecord, on_delete=models.CASCADE, related_name="sign_in")
     sign_out = models.ForeignKey(AuditRecord, on_delete=models.CASCADE, null=True, related_name="sign_out")
 
+    @property
+    def is_open(self):
+        return self.sign_out is None
+
     objects = SignInQueryset().as_manager()
 
     class Meta:

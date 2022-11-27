@@ -13,6 +13,7 @@ urlpatterns = [
     path('profile/createurl', profile.create_url, name='profile_create_url'),
 
     path('report', report.report, name='report'),
+    path('report.json', report.report_json, name='report_json'),
 
     path('', views.index, name='index'),
 ]

@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.postgres.aggregates import StringAgg
 from django.db import transaction
-from django.db.models import Q, Max
+from django.db.models import Q, Max, Count
 from django.db.models.functions import Lower
 
 from .models import ContactDetails, ContactValidationCode, SignInRecord, AuditRecord, LongLivedToken, UserSettings
@@ -35,10 +35,6 @@ class ContactValidationCodeAdmin(admin.ModelAdmin):
 
 class SignInAdmin(admin.ModelAdmin):
     list_display = ('user', 'date', 'sign_in', 'sign_out')
-
-
-class LongLivedTokenAdmin(admin.ModelAdmin):
-    list_display = ('user', 'created', 'modified')
 
 
 @admin.action(description='Merge users')
@@ -76,15 +72,22 @@ class UserSettingsInline(admin.TabularInline):
     fields = ('ricked', )
 
 
+class LongLivedTokenInline(admin.TabularInline):
+    model = LongLivedToken
+    fields = ('token', 'created')
+    readonly_fields = ('token', 'created')
+
+
 class LastActivityField(admin.DateFieldListFilter):
     pass
 
 
 class CustomUserAdmin(UserAdmin):
-    list_display = ('username', 'first_name', 'last_name', 'emails', 'phone', 'last_activity', 'is_staff')
+    list_display = ('username', 'first_name', 'last_name', 'emails', 'phone', 'last_activity', 'is_staff', 'tokens')
     actions = (merge_users, create_token)
-    inlines = (ContactDetailsInline, UserSettingsInline)
+    inlines = (ContactDetailsInline, UserSettingsInline, LongLivedTokenInline)
     search_fields = ('username', 'first_name', 'last_name', 'emails', 'phone')
+    readonly_fields = ('email',)
 
     @admin.display(description="Email", ordering='emails')
     def emails(self, obj):
@@ -104,6 +107,10 @@ class CustomUserAdmin(UserAdmin):
     def last_activity(self, obj):
         return obj.last_activity
 
+    @admin.display(description="# Tokens", ordering='tokens')
+    def tokens(self, obj):
+        return obj.tokens if obj.tokens else ""
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.annotate(
@@ -111,7 +118,8 @@ class CustomUserAdmin(UserAdmin):
                              filter=Q(contactdetails__method='email'), distinct=True),
             phone=StringAgg(Lower('contactdetails__value'), delimiter=', ',
                              filter=Q(contactdetails__method='sms'), distinct=True),
-            last_activity=Max('signinrecord__date')
+            last_activity=Max('signinrecord__date'),
+            tokens=Count('longlivedtoken', distinct=True),
         )
         return qs
 
@@ -121,7 +129,6 @@ admin.site.register(ContactDetails, ContactDetailsAdmin)
 admin.site.register(ContactValidationCode, ContactValidationCodeAdmin)
 admin.site.register(SignInRecord, SignInAdmin)
 admin.site.register(AuditRecord, AuditRecordAdmin)
-admin.site.register(LongLivedToken, LongLivedTokenAdmin)
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
