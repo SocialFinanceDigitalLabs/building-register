@@ -4,7 +4,6 @@ import string
 from datetime import timedelta
 
 from django.utils.timezone import now
-from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -126,3 +125,9 @@ class LongLivedToken(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     objects = LongLivedTokenManager()
+
+
+class UserSettings(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="settings")
+    ricked = models.BooleanField(default=False)
+

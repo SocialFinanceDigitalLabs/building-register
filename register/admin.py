@@ -6,7 +6,7 @@ from django.db import transaction
 from django.db.models import Q, Max
 from django.db.models.functions import Lower
 
-from .models import ContactDetails, ContactValidationCode, SignInRecord, AuditRecord, LongLivedToken
+from .models import ContactDetails, ContactValidationCode, SignInRecord, AuditRecord, LongLivedToken, UserSettings
 
 User = get_user_model()
 
@@ -71,6 +71,11 @@ class ContactDetailsInline(admin.TabularInline):
         return False
 
 
+class UserSettingsInline(admin.TabularInline):
+    model = UserSettings
+    fields = ('ricked', )
+
+
 class LastActivityField(admin.DateFieldListFilter):
     pass
 
@@ -78,7 +83,7 @@ class LastActivityField(admin.DateFieldListFilter):
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'first_name', 'last_name', 'emails', 'phone', 'last_activity', 'is_staff')
     actions = (merge_users, create_token)
-    inlines = (ContactDetailsInline,)
+    inlines = (ContactDetailsInline, UserSettingsInline)
     search_fields = ('username', 'first_name', 'last_name', 'emails', 'phone')
 
     @admin.display(description="Email", ordering='emails')
