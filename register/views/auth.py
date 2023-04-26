@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 
 from register.models import LongLivedToken
-from register.util.tokens.resolver import get_token_method, token_services
+from register.util.tokens.resolver import get_services, get_token_method
 
 User = get_user_model()
 
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 @never_cache
 def login(request):
-    return render(request, "register/login.html", dict(methods=token_services))
+    return render(request, "register/login.html", dict(methods=get_services()))
 
 
 @never_cache
