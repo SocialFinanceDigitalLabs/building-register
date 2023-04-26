@@ -1,8 +1,12 @@
+import datetime
 import re
 
+import jwt
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login as auth_login
 from django.db import transaction
+from django.utils import timezone
 
 from register.models import AuditRecord, ContactDetails
 
@@ -42,3 +46,15 @@ def login(request, details: ContactDetails, first_name: str, last_name: str) -> 
 
     auth_login(request, details.user)
     return details.user
+
+
+def create_jwt_token(user) -> str:
+    token_data = {
+        "sub": user.id,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "iss": "SF Registration",
+        "iat": timezone.now(),
+        "exp": timezone.now() + datetime.timedelta(days=90),
+    }
+    return jwt.encode(token_data, settings.SECRET_KEY, algorithm="HS256")

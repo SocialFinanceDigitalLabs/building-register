@@ -40,6 +40,7 @@ class AuditRecordAdmin(admin.ModelAdmin):
 
 
 class ContactDetailsAdmin(admin.ModelAdmin):
+    search_fields = ("value",)
     list_display = ("value", "method", "user", "audit")
 
 
