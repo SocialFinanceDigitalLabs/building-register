@@ -7,7 +7,6 @@ User = get_user_model()
 
 
 class NoSpaceCharField(forms.CharField):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -20,7 +19,7 @@ class NoSpaceCharField(forms.CharField):
 
 class RegisterForm(forms.Form):
     contact_value = NoSpaceCharField(max_length=200, min_length=5)
-    action = forms.CharField(widget = forms.HiddenInput(), required = False, initial="Test")
+    action = forms.CharField(widget=forms.HiddenInput(), required=False, initial="Test")
 
 
 class ContactDetailsForm(forms.ModelForm):
@@ -29,10 +28,4 @@ class ContactDetailsForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name']
-
-
-
-
-
-
+        fields = ["first_name", "last_name"]

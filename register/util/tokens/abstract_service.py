@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 
 from register.forms import NoSpaceCharField
 from register.models import ContactDetails, ContactValidationCode
@@ -12,7 +13,7 @@ User = get_user_model()
 
 
 class TokenService(ABC):
-    template = 'register/login_form.html'
+    template = "register/login_form.html"
 
     @property
     @abstractmethod
@@ -50,17 +51,23 @@ class TokenService(ABC):
 
     def form_response(self, request, form, **kwargs):
         extra_context = {**kwargs, **self.get_extra_context(request, form)}
-        return render(request, self.template, dict(form=form, method=self, **extra_context))
+        return render(
+            request, self.template, dict(form=form, method=self, **extra_context)
+        )
 
 
 class SendCodeForm(forms.Form):
     contact_value = NoSpaceCharField(max_length=200, label="Contact Details")
-    action = forms.CharField(widget=forms.HiddenInput(), required = False, initial="register")
+    action = forms.CharField(
+        widget=forms.HiddenInput(), required=False, initial="register"
+    )
 
 
 class ValidateCodeForm(forms.Form):
     code = forms.IntegerField()
-    action = forms.CharField(widget=forms.HiddenInput(), required=False, initial="validate")
+    action = forms.CharField(
+        widget=forms.HiddenInput(), required=False, initial="validate"
+    )
     contact_id = forms.IntegerField(widget=forms.HiddenInput())
 
 
@@ -70,7 +77,7 @@ class ValidateCodeWithContactForm(forms.ModelForm, ValidateCodeForm):
     contact_form = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
 
     class Meta:
-        fields = ['first_name', 'last_name']
+        fields = ["first_name", "last_name"]
         model = User
 
 
@@ -82,8 +89,10 @@ class PingPongTokenService(TokenService):
 
     default_message = "Please enter your contact details to receive a token."
     validate_code_message = "Your code has now been printed on the console. Please enter your code to log in."
-    validate_code_with_contact_message = "Your code has now been sent. " \
-                                         "Please enter your name and code to set up your account."
+    validate_code_with_contact_message = (
+        "Your code has now been sent. "
+        "Please enter your name and code to set up your account."
+    )
 
     @abstractmethod
     def send_code(self, request, code):
@@ -96,11 +105,11 @@ class PingPongTokenService(TokenService):
     def get_extra_context(self, request, form):
         context = dict(**super().get_extra_context(request, form))
         if isinstance(form, self.validate_code_with_contact_form):
-            context['message'] = self.validate_code_with_contact_message
+            context["message"] = self.validate_code_with_contact_message
         elif isinstance(form, self.validate_code_form):
-            context['message'] = self.validate_code_message
+            context["message"] = self.validate_code_message
         else:
-            context['message'] = self.default_message
+            context["message"] = self.default_message
 
         return context
 
@@ -119,34 +128,41 @@ class PingPongTokenService(TokenService):
         if form.is_valid():
             contact_value = self.validate_contact_value(form)
             if contact_value is not None:
-                details, created = ContactDetails.objects.get_or_create(value=contact_value, method=self.code)
+                details, created = ContactDetails.objects.get_or_create(
+                    value=contact_value, method=self.code
+                )
                 code = ContactValidationCode.objects.create_code(details)
                 self.send_code(request, code)
                 if details.user:
                     form = self.validate_code_form(initial=dict(contact_id=details.pk))
                 else:
-                    form = self.validate_code_with_contact_form(initial=dict(contact_id=details.pk))
+                    form = self.validate_code_with_contact_form(
+                        initial=dict(contact_id=details.pk)
+                    )
 
         return self.form_response(request, form)
 
     def handle_validate(self, request):
-        if request.POST.get('contact_form'):
+        if request.POST.get("contact_form"):
             form = self.validate_code_with_contact_form(request.POST)
         else:
             form = self.validate_code_form(request.POST)
 
         if form.is_valid():
-            details_pk = form.cleaned_data['contact_id']
+            details_pk = form.cleaned_data["contact_id"]
             details = ContactDetails.objects.get(pk=details_pk)
-            code = form.cleaned_data['code']
+            code = form.cleaned_data["code"]
             if ContactValidationCode.objects.validate_code(details, code):
-                login(request, details, form.cleaned_data.get('first_name'), form.cleaned_data.get('last_name'))
-                return redirect('index')
+                login(
+                    request,
+                    details,
+                    form.cleaned_data.get("first_name"),
+                    form.cleaned_data.get("last_name"),
+                )
+                return redirect("index")
             else:
                 form.add_error("code", "Code not found.")
         return self.form_response(request, form)
 
     def validate_contact_value(self, form):
-        return form.cleaned_data['contact_value']
-
-
+        return form.cleaned_data["contact_value"]

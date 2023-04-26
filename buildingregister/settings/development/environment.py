@@ -1,10 +1,9 @@
-from split_settings.tools import optional, include
+from split_settings.tools import include, optional
 
-DEBUG=True
+DEBUG = True
 
 include(
-    '../common/*.py',
-    'database.py',
-    'security.py',
+    "../common/*.py",
+    "database.py",
+    "security.py",
 )
-

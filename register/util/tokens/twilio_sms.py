@@ -1,5 +1,5 @@
-from django.conf import settings
 from django import forms
+from django.conf import settings
 from django.template.loader import render_to_string
 from twilio.base.exceptions import TwilioRestException
 
@@ -35,24 +35,29 @@ class TwilioSMSService(PingPongTokenService):
 
     @property
     def configured(self):
-        return hasattr(settings, 'TWILIO_CLIENT')
+        return hasattr(settings, "TWILIO_CLIENT")
 
     def validate_contact_value(self, form):
-        contact_value = form.cleaned_data['contact_value']
+        contact_value = form.cleaned_data["contact_value"]
         try:
-            result = settings.TWILIO_CLIENT.lookups.phone_numbers(contact_value).fetch(country_code='gb')
+            result = settings.TWILIO_CLIENT.lookups.phone_numbers(contact_value).fetch(
+                country_code="gb"
+            )
             return result.phone_number
         except TwilioRestException as e:
-            form.add_error("contact_value", "This does not appear to be a correctly formatted UK phone number")
+            form.add_error(
+                "contact_value",
+                "This does not appear to be a correctly formatted UK phone number",
+            )
             return None
 
     def send_code(self, request, code):
         self.send_message(code.details.value, "login", code=code.code)
 
     def send_message(self, recipient, template, **context):
-        body_content = render_to_string(f'register/messaging/sms/{template}.txt', context)
+        body_content = render_to_string(
+            f"register/messaging/sms/{template}.txt", context
+        )
         settings.TWILIO_CLIENT.messages.create(
-            body=body_content,
-            from_=SENDER_NAME,
-            to=recipient
+            body=body_content, from_=SENDER_NAME, to=recipient
         )

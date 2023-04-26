@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.template.loader import render_to_string
 
-from register.util.tokens.abstract_service import SendCodeForm, PingPongTokenService
+from register.util.tokens.abstract_service import PingPongTokenService, SendCodeForm
 
 User = get_user_model()
 
@@ -30,7 +30,7 @@ class DevelopmentConsoleService(PingPongTokenService):
         return settings.DEBUG
 
     def validate_contact_value(self, form):
-        contact_value = form.cleaned_data['contact_value']
+        contact_value = form.cleaned_data["contact_value"]
         if contact_value == "fail":
             form.add_error("contact_value", "This is a sample validation error")
             return None
@@ -40,6 +40,7 @@ class DevelopmentConsoleService(PingPongTokenService):
         self.send_message(code.details.value, "login", code=code.code)
 
     def send_message(self, recipient, template, **context):
-        body_content = render_to_string(f'register/messaging/dev/{template}.txt', context)
+        body_content = render_to_string(
+            f"register/messaging/dev/{template}.txt", context
+        )
         print(f"{recipient}: {body_content}")
-

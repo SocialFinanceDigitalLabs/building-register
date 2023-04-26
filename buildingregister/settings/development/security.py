@@ -1,3 +1,3 @@
-SECRET_KEY = '---+++---DUMMY---+++---'
+SECRET_KEY = "---+++---DUMMY---+++---"
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]

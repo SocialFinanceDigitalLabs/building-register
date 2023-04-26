@@ -1,7 +1,7 @@
 import logging
 
-from django.conf import settings
 from django import forms
+from django.conf import settings
 from django.template.loader import render_to_string
 
 from register.util.tokens.abstract_service import PingPongTokenService, SendCodeForm
@@ -41,15 +41,22 @@ class Office365EmailService(PingPongTokenService):
 
     @property
     def configured(self):
-        return hasattr(settings, 'O365_EMAIL_SENDER')
+        return hasattr(settings, "O365_EMAIL_SENDER")
 
     def send_code(self, request, code):
-        self.send_message(code.details.value, "login", code=code.code, subject="SF Building Sign-In Code")
+        self.send_message(
+            code.details.value,
+            "login",
+            code=code.code,
+            subject="SF Building Sign-In Code",
+        )
 
     def send_message(self, recipient, template, subject=None, **context):
         if subject is None:
             subject = "SF Office Message"
-        body_content = render_to_string(f'register/messaging/email/{template}.html', context)
+        body_content = render_to_string(
+            f"register/messaging/email/{template}.html", context
+        )
         message = dict(
             subject=subject,
             body=dict(contentType="HTML", content=body_content),
@@ -58,7 +65,7 @@ class Office365EmailService(PingPongTokenService):
         response = settings.MSGRAPHY_CLIENT.make_request(
             f"/users/{settings.O365_EMAIL_SENDER}/sendMail",
             method="POST",
-            json=dict(message=message, saveToSentItems=False)
+            json=dict(message=message, saveToSentItems=False),
         )
         if not response.ok:
             logger.exception(f"Failed to send token message to {recipient}")

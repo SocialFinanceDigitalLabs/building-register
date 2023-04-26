@@ -1,10 +1,12 @@
 import re
-from django.contrib.auth import get_user_model, login as auth_login
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth import login as auth_login
 from django.db import transaction
 
-from register.models import ContactDetails, AuditRecord
+from register.models import AuditRecord, ContactDetails
 
-_username_pattern = re.compile(r'[^a-zA-Z09]')
+_username_pattern = re.compile(r"[^a-zA-Z09]")
 
 User = get_user_model()
 
@@ -12,7 +14,7 @@ User = get_user_model()
 def get_username(first_name: str, last_name: str) -> str:
     first_name = _username_pattern.sub("", first_name).lower()
     last_name = _username_pattern.sub("", last_name).lower()
-    return f'{first_name}.{last_name}'
+    return f"{first_name}.{last_name}"
 
 
 def get_unique_username(first_name: str, last_name: str) -> str:
@@ -20,7 +22,7 @@ def get_unique_username(first_name: str, last_name: str) -> str:
     unique_username = (0, username)
     while User.objects.filter(username=unique_username[1]).count() > 0:
         sequence = unique_username[0] + 1
-        unique_username = (sequence, f'{username}.{sequence}')
+        unique_username = (sequence, f"{username}.{sequence}")
     return unique_username[1]
 
 

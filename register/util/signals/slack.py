@@ -1,4 +1,5 @@
 import logging
+
 from django.conf import settings
 from django.dispatch import receiver
 from slack_sdk import WebhookClient
@@ -11,8 +12,10 @@ logger = logging.getLogger(__name__)
 
 def _send_message(user, direction):
     signed_in_users = SignInRecord.objects.today().open()
-    message = f"User {user.first_name} {user.last_name} signed {direction}. " \
-              f"There are now {signed_in_users.count()} users signed in."
+    message = (
+        f"User {user.first_name} {user.last_name} signed {direction}. "
+        f"There are now {signed_in_users.count()} users signed in."
+    )
     for webhook in settings.SLACK_WEBHOOKS:
         client = WebhookClient(webhook)
         client.send(text=message)

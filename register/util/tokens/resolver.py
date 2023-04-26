@@ -6,7 +6,11 @@ DEFAULT_SERVICES = [
     "register.util.tokens.TwilioSMSService",
 ]
 
-token_services = {s.code: s for s in [import_string(srv)() for srv in DEFAULT_SERVICES] if s.configured}
+token_services = {
+    s.code: s
+    for s in [import_string(srv)() for srv in DEFAULT_SERVICES]
+    if s.configured
+}
 
 
 def get_token_method(method: str) -> "register.util.tokens.TokenService":
