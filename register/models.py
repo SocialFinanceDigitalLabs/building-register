@@ -39,8 +39,8 @@ class ContactValidationCode(models.Model):
 
 
 class ContactDetails(models.Model):
-    value = models.CharField(max_length=200)
-    method = models.CharField(max_length=5)
+    value = models.CharField(max_length=255)
+    method = models.CharField(max_length=20)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     audit = models.ForeignKey(
         "AuditRecord",
