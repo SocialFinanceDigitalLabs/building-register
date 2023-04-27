@@ -82,16 +82,24 @@ def app_status(request):
     if request.method == "POST":
         request_data = json.loads(request.body)
         action = request_data.get("action")
+        push_token = request_data.get("pushToken")
+
+        audit = AuditRecord.objects.create_from_request(request)
+        if push_token:
+            details, created = ContactDetails.objects.get_or_create(
+                user=request.user, value=push_token, method="pushtoken"
+            )
+            if created:
+                details.audit = audit
+                details.save()
 
         if action == "enter" and signed_in.count() == 0:
-            audit = AuditRecord.objects.create_from_request(request)
             SignInRecord.objects.create(user=request.user, sign_in=audit)
             user_signed_in.send_robust(
                 sender=SignInRecord, request=request, user=request.user, audit=audit
             )
             status_updated = True
         elif action == "exit" and signed_in.count() > 0:
-            audit = AuditRecord.objects.create_from_request(request)
             signed_in.sign_out(audit)
             user_signed_out.send_robust(
                 sender=SignInRecord, request=request, user=request.user, audit=audit
