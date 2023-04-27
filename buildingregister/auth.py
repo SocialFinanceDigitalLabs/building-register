@@ -24,9 +24,6 @@ class BearerTokenAuthenticationMiddleware(BaseBackend):
         user = None
         try:
             header_value = request.headers["Authorization"]
-        except KeyError:
-            pass
-        else:
             token_type, token = header_value.split(" ", 1)
             if token_type == "Bearer":
                 try:
@@ -39,7 +36,9 @@ class BearerTokenAuthenticationMiddleware(BaseBackend):
                     user_id = token_value["sub"]
                     user = User.objects.get(id=user_id)
                     login(request, user)
-                    print("User logged in via Bearer token", user)
+                    logger.info("User logged in via Bearer token", user)
+        except Exception:
+            pass
 
         return user
 
