@@ -2,10 +2,10 @@
 name = "qr-generator"
 version = "0.1.0"
 description = ""
-authors = ["Kaj Siebert <kaj@k-si.com>"]
+authors = ["Kaj Siebert <kaj@k-si.com>", "Matthew Pugh <matthew.pugh@socialfinance.org.uk>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 qrcode = "^7.3.1"
 Pillow = "^8.4.0"
 
