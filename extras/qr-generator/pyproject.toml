@@ -2,7 +2,7 @@
 name = "qr-generator"
 version = "0.1.0"
 description = ""
-authors = ["Kaj Siebert <kaj@k-si.com>"]
+authors = ["Kaj Siebert <kaj@k-si.com>", "Matthew Pugh <matthew.pugh@socialfinance.org.uk>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
