@@ -3,7 +3,7 @@
 We’d love to accept your patches and contributions to this project. Please review the following guidelines you'll need to follow in order to make a contribution.
 
 ## Contributor License Agreement
-All contributors to this project must have a signed Contributor License Agreement ("CLA") on file with us. The CLA grants us the permissions we need to use and redistribute your contributions as part of the project; you or your employer retain the copyright to your contribution. Head over to the [Individual](https://www.sfdl.org.uk/docs/Individual_CLA.docx), [Public Body](https://www.sfdl.org.uk/docs/Public_body_CLA.docx) or [Corporate](https://www.sfdl.org.uk/docs/Corporate_CLA.docx) CLAs and send them with your information and signature to kaj.siebert@socialfinance.org.uk.
+All contributors to this project must have a signed Contributor License Agreement ("CLA") on file with us. The CLA grants us the permissions we need to use and redistribute your contributions as part of the project; you or your employer retain the copyright to your contribution. Head over to the [Individual](https://www.sfdl.org.uk/docs/Individual_CLA.docx), [Public Body](https://www.sfdl.org.uk/docs/Public_body_CLA.docx) or [Corporate](https://www.sfdl.org.uk/docs/Corporate_CLA.docx) CLAs and send them with your information and signature.
 
 We generally only need you (or your employer) to sign our CLA once and once signed, you should be able to submit contributions to any Children's Services Collaborative Digital Projects.
 

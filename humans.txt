@@ -2,5 +2,8 @@
 Developer: Kaj Siebert
 Contact: kaj@k-si.com
 
+Developer: Matthew Pugh
+Contact: matthew.pugh@socialfinance.org.uk
+
 /* CONTRIBUTORS */
 
