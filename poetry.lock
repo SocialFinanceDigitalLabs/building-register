@@ -665,12 +665,27 @@ arrow = ">=1.1.0,<2.0.0"
 blessed = ">=1.17.6,<2.0.0"
 django = ">=2.2"
 django-picklefield = ">=3.0.1,<4.0.0"
+django-q-sentry = {version = ">=0.1", optional = true, markers = "extra == \"sentry\""}
 redis = ">=3.5.3,<4.0.0"
 
 [package.extras]
 rollbar = ["django-q-rollbar (>=0.1)"]
 sentry = ["django-q-sentry (>=0.1)"]
 testing = ["boto3 (>=1.14.12,<2.0.0)", "croniter (>=0.3.34,<0.4.0)", "django-redis (>=4.12.1,<5.0.0)", "hiredis (>=1.0.1,<2.0.0)", "iron-mq (>=0.9,<0.10)", "psutil (>=5.7.0,<6.0.0)", "pymongo (>=3.10.1,<4.0.0)"]
+
+[[package]]
+name = "django-q-sentry"
+version = "0.1.6"
+description = "A Sentry support plugin for Django Q"
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-q-sentry-0.1.6.linux-x86_64.tar.gz", hash = "sha256:bdbd9c7a48d543c2d74ae9a4c9004dfc0965cb11bc145c6cf4de3429be1b58ae"},
+    {file = "django_q_sentry-0.1.6-py3-none-any.whl", hash = "sha256:9b8b4d7fad253a7d9a47f2c2ab0d9dea83078b7ef45c8849dbb1e4176ef8d050"},
+]
+
+[package.dependencies]
+sentry-sdk = ">=1.5.5"
 
 [[package]]
 name = "django-split-settings"
@@ -1658,4 +1673,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4"
-content-hash = "82d0a6d2de5f067a31fce2ac306192f52c338e600ce5f495cc092334ea98bf36"
+content-hash = "16f7a80f146d8b10cf9639fcb30340d0d95fc7306b59564553ec4590cdff6e49"
