@@ -5,9 +5,9 @@ description = ""
 authors = ["Kaj Siebert <kaj@k-si.com>", "Matthew Pugh <matthew.pugh@socialfinance.org.uk>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-qrcode = "^7.3.1"
-Pillow = "^8.4.0"
+python = "^3.9"
+qrcode = "^8.0"
+Pillow = "^11.1.0"
 
 [tool.poetry.dev-dependencies]
 
